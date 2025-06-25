@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-# Install Chromium for Puppeteer manually (if needed)
-npm install puppeteer
+# install puppeteer chromium
+npx puppeteer browsers install chrome
