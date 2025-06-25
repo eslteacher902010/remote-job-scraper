@@ -27,8 +27,16 @@ async function scrapeJobs(site = "remoteok", query = "python developer") {
   try {
     const browser = await puppeteer.launch({
       headless: true,
-      defaultViewport: null,
-      args: ['--start-maximized']
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-gpu'
+      ]
     });
 
     const page = await browser.newPage();
