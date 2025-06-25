@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Top Remote Jobs</title>
+</head>
+<body>
+  <h1>Hello, <%= name %>!</h1>
+  <p>Here are your top job results:</p>
+
+  <% if (jobs && jobs.length > 0) { %>
+    <ul>
+      <% jobs.forEach(job => { %>
+        <li>
+          <% if (job.link) { %>
+            <a href="<%= job.link %>" target="_blank"><strong><%= job.title %></strong></a>
+          <% } else { %>
+            <strong><%= job.title %></strong>
+          <% } %><br>
+          <em><%= job.company %></em><br>
+          <p><%= job.summary %></p>
+          <hr>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No jobs found.</p>
+  <% } %>
+</body>
+</html>

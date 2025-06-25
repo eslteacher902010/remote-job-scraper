@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Job Listings</title>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f4f4f4;
+    }
+
+    h2 {
+      margin-top: 2rem;
+    }
+
+    .job {
+      background-color: #fff;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #007BFF;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .search-form {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border-left: 4px solid #28a745;
+    }
+
+    select, input[type="text"], input[type="email"], button {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .content-below-h2 {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border-left: 4px solid #007BFF;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Search Remote Jobs</h2>
+  <form method="GET" action="/" class="search-form">
+    <label for="site">Choose a job board:</label>
+    <select name="site" id="site">
+      <option value="remoteok">RemoteOK</option>
+      <option value="weworkremotely">We Work Remotely</option>
+      <option value="remotive">Remotive</option>
+      <option value="himalayas">Himalayas</option>
+    </select><br>
+
+    <label for="query">Keyword:</label><br>
+    <input type="text" name="query" id="query" placeholder="e.g. python developer" required><br>
+
+    <button type="submit">Search</button>
+  </form>
+
+    <% if (jobs && jobs.length > 0) { %>
+    <div class="content-below-h2">
+      <form method="GET" action="/" class="search-form">
+        <input type="hidden" name="site" value="<%= site %>">
+        <input type="hidden" name="query" value="<%= query %>">
+
+        <label for="name">Your name (optional):</label><br>
+        <input type="text" name="name" id="name" placeholder="e.g. John"><br>
+
+        <label for="email">Send to your email (first 10 results):</label><br>
+        <input type="email" name="email" id="email" placeholder="you@example.com" required>
+        <button type="submit">Send Email</button>
+      </form>
+    </div>
+  <% } %>
+
+
+  <h2>Job Listings</h2>
+
+  <% if (!jobs || jobs.length === 0) { %>
+    <p>No jobs found. Try a different keyword or site.</p>
+  <% } else { %>
+    <% jobs.forEach(job => { %>
+      <div class="job">
+        <h3>
+          <% if (job.link) { %>
+            <a href="<%= job.link %>" target="_blank"><%= job.title %></a>
+          <% } else { %>
+            <%= job.title %>
+          <% } %>
+        </h3>
+        <p><strong>Company:</strong> <%= job.company %></p>
+        <p><%= job.summary %></p>
+      </div>
+    <% }) %>
+  <% } %>
+
+</body>
+</html>
