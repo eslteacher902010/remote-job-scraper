@@ -24,13 +24,9 @@ async function scrapeJobs(site = "remoteok", query = "python developer") {
       return [];
   }
 
-  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH ||
-    "/opt/render/.cache/puppeteer/chrome/linux-137.0.7151.119/chrome-linux64/chrome";
-
   try {
     const browser = await puppeteer.launch({
       headless: true,
-      executablePath,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
