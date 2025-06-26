@@ -1,9 +1,10 @@
-const puppeteer = require('puppeteer');
-const cheerio = require('cheerio');
+const axios = require("axios");
+const cheerio = require("cheerio");
 
 async function scrapeJobs(site = "remoteok", query = "python developer") {
   const jobs = [];
   const formattedQuery = query.trim().toLowerCase().replace(/\s+/g, "-");
+  const BROWSERLESS_TOKEN = process.env.BROWSERLESS_TOKEN;
 
   let url;
   switch (site) {
@@ -25,25 +26,18 @@ async function scrapeJobs(site = "remoteok", query = "python developer") {
   }
 
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--disable-gpu'
-      ]
-    });
+    const response = await axios.post(
+      `https://chrome.browserless.io/content?token=${BROWSERLESS_TOKEN}`,
+      {
+        url: url,
+        options: {
+          waitUntil: "networkidle2",
+          timeout: 30000
+        }
+      }
+    );
 
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
-
-    const content = await page.content();
-    const $ = cheerio.load(content);
+    const $ = cheerio.load(response.data);
 
     if (site === "remoteok") {
       $("tr.job").each((i, el) => {
@@ -52,7 +46,6 @@ async function scrapeJobs(site = "remoteok", query = "python developer") {
         const summary = $(el).find("td.description").text().trim();
         const href = $(el).attr("data-href");
         const link = href ? `https://remoteok.com${href}` : "";
-
         if (title) jobs.push({ title, company, summary, link });
       });
     } else if (site === "weworkremotely") {
@@ -62,7 +55,6 @@ async function scrapeJobs(site = "remoteok", query = "python developer") {
         const summary = $(el).find("span.region").text().trim();
         const href = $(el).find("a").attr("href");
         const link = href ? `https://weworkremotely.com${href}` : "";
-
         if (title) jobs.push({ title, company, summary, link });
       });
     } else if (site === "remotive") {
@@ -71,7 +63,6 @@ async function scrapeJobs(site = "remoteok", query = "python developer") {
         const company = $(el).find("div.card-company").text().trim();
         const summary = $(el).find("p.card-description").text().trim();
         const link = $(el).find("a").attr("href") || "";
-
         if (title) jobs.push({ title, company, summary, link });
       });
     } else if (site === "himalayas") {
@@ -81,16 +72,14 @@ async function scrapeJobs(site = "remoteok", query = "python developer") {
         const summary = $(el).find(".JobCard__location").text().trim();
         const href = $(el).find("a").attr("href");
         const link = href ? `https://himalayas.app${href}` : "";
-
         if (title) jobs.push({ title, company, summary, link });
       });
     }
 
-    await browser.close();
     return jobs;
 
   } catch (err) {
-    console.error("Scraping error:", err);
+    console.error("Scraping error:", err.message);
     return [];
   }
 }
